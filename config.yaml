@@ -1,0 +1,53 @@
+# Demo configuration showing static_observer + receiver_creator.
+#
+# Flow:
+#   1. static_observer fires a single synthetic endpoint of type "static" on startup.
+#   2. receiver_creator matches it (rule: type == "static") and starts two
+#      hostmetrics subreceiver instances — one for "prod", one for "staging".
+#   3. Each subreceiver template has its own resource_attributes block, which the
+#      receiver_creator stamps onto all telemetry from that instance.
+#   4. The debug exporter prints full telemetry detail to stdout — look for
+#      resource attributes service.name and deployment.environment to confirm
+#      each instance is independently tagged.
+#
+# No changes to the hostmetrics receiver were needed.
+
+extensions:
+  static_observer:
+
+receivers:
+  receiver_creator:
+    watch_observers: [static_observer]
+    receivers:
+      hostmetrics/prod:
+        rule: type == "static"
+        config:
+          collection_interval: 10s
+          scrapers:
+            cpu: {}
+            memory: {}
+        resource_attributes:
+          service.name: myapp-prod
+          deployment.environment: production
+
+      hostmetrics/staging:
+        rule: type == "static"
+        config:
+          collection_interval: 10s
+          scrapers:
+            cpu: {}
+            memory: {}
+        resource_attributes:
+          service.name: myapp-staging
+          deployment.environment: staging
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  extensions: [static_observer]
+  pipelines:
+    metrics:
+      receivers: [receiver_creator]
+      exporters: [debug]
