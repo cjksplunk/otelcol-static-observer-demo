@@ -55,23 +55,17 @@ exporter (verbosity: detailed).
 
 ## Run
 
-The `static_observer` extension lives in a fork branch not yet in the public Go
-checksum database, so `GONOSUMDB` is required.
-
 ```bash
-# Fetch dependencies (first run only)
-GONOSUMDB="github.com/cjksplunk/*" go mod tidy
-
-# Run the collector
-GONOSUMDB="github.com/cjksplunk/*" go run . --config config.yaml
-```
-
-Or via make:
-
-```bash
-make tidy   # first run only
+git clone https://github.com/cjksplunk/otelcol-static-observer-demo
+cd otelcol-static-observer-demo
 make run
 ```
+
+That's it. `go.sum` is committed so no `go mod tidy` is needed on a fresh clone.
+
+The `static_observer` extension lives in a fork not yet in the public Go checksum
+database. `make run` sets `GONOSUMDB` automatically — you don't need to set
+anything yourself.
 
 ## Expected output
 
@@ -94,15 +88,17 @@ is the resource attributes, set entirely in config.
 
 ## Dependency pinning
 
-`go.mod` uses `replace` directives to pin all
-`github.com/open-telemetry/opentelemetry-collector-contrib` packages to the
-`mysql-add-service-resource-attributes-clean` branch of
+`go.mod` uses `replace` directives to pin the four contrib packages
+(`extension/observer`, `extension/observer/staticobserver`,
+`receiver/hostmetricsreceiver`, `receiver/receivercreator`) to tagged releases
+on the `mysql-add-service-resource-attributes-clean` branch of
 [cjksplunk/opentelemetry-collector-contrib](https://github.com/cjksplunk/opentelemetry-collector-contrib).
 All `go.opentelemetry.io/collector/*` core modules resolve from upstream.
 
 Because the fork is not in the public Go checksum database, `GONOSUMDB` must be
-set when downloading dependencies:
+set when downloading dependencies. `make run` and `make tidy` handle this
+automatically. If you run `go` commands directly, prefix them:
 
 ```bash
-GONOSUMDB="github.com/cjksplunk/*" go mod tidy
+GONOSUMDB="github.com/cjksplunk/*" go run . --config config.yaml
 ```
