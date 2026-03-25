@@ -46,7 +46,7 @@ Two `hostmetrics` subreceiver instances via `receiver_creator`:
 | `hostmetrics/prod` | `myapp-prod` | `production` |
 | `hostmetrics/staging` | `myapp-staging` | `staging` |
 
-Both scrape `cpu` and `memory` every 10 seconds and export to the `debug`
+Both scrape `cpu` and `memory` every 5 seconds and export to the `debug`
 exporter (verbosity: detailed).
 
 ## Prerequisites
@@ -63,9 +63,10 @@ make run
 
 That's it. `go.sum` is committed so no `go mod tidy` is needed on a fresh clone.
 
-The `static_observer` extension lives in a fork not yet in the public Go checksum
-database. `make run` sets `GONOSUMDB` automatically — you don't need to set
-anything yourself.
+The fork modules are not in the public Go checksum database and the public
+proxy has a stale cache for them. `make run` sets `GOPROXY=off,direct`,
+`GONOSUMDB`, and `TMPDIR` automatically — you don't need to set anything
+yourself.
 
 ## Expected output
 
@@ -88,17 +89,18 @@ is the resource attributes, set entirely in config.
 
 ## Dependency pinning
 
-`go.mod` uses `replace` directives to pin the four contrib packages
-(`extension/observer`, `extension/observer/staticobserver`,
-`receiver/hostmetricsreceiver`, `receiver/receivercreator`) to tagged releases
-on the `mysql-add-service-resource-attributes-clean` branch of
+The four contrib packages (`extension/observer`, `extension/observer/staticobserver`,
+`receiver/hostmetricsreceiver`, `receiver/receivercreator`) are pinned to tagged
+releases on the fork
 [cjksplunk/opentelemetry-collector-contrib](https://github.com/cjksplunk/opentelemetry-collector-contrib).
 All `go.opentelemetry.io/collector/*` core modules resolve from upstream.
 
-Because the fork is not in the public Go checksum database, `GONOSUMDB` must be
-set when downloading dependencies. `make run` and `make tidy` handle this
-automatically. If you run `go` commands directly, prefix them:
+Because the fork is not in the public Go checksum database and `proxy.golang.org`
+has a stale cache for these modules, three env vars must be set when running `go`
+commands directly:
 
 ```bash
-GONOSUMDB="github.com/cjksplunk/*" go run . --config config.yaml
+GOPROXY="off,direct" GONOSUMDB="github.com/cjksplunk/*" TMPDIR=/tmp go run . --config config.yaml
 ```
+
+`make run` and `make tidy` set these automatically.
