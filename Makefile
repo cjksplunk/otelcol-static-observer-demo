@@ -1,7 +1,7 @@
 .PHONY: run tidy
 
 run:
-	GONOSUMDB="github.com/cjksplunk/*" go run . --config config.yaml
+	GOPROXY="off,direct" GONOSUMDB="github.com/cjksplunk/*" TMPDIR=/tmp go run . --config config.yaml
 
 tidy:
-	GONOSUMDB="github.com/cjksplunk/*" go mod tidy
+	GOPROXY="off,direct" GONOSUMDB="github.com/cjksplunk/*" TMPDIR=/tmp go mod tidy

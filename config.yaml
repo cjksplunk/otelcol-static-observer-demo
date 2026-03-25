@@ -22,7 +22,7 @@ receivers:
       hostmetrics/prod:
         rule: type == "static"
         config:
-          collection_interval: 10s
+          collection_interval: 5s
           scrapers:
             cpu: {}
             memory: {}
@@ -33,7 +33,7 @@ receivers:
       hostmetrics/staging:
         rule: type == "static"
         config:
-          collection_interval: 10s
+          collection_interval: 5s
           scrapers:
             cpu: {}
             memory: {}
