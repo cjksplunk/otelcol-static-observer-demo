@@ -4,6 +4,10 @@
 
 Single-contributor demo repo. Commit directly to `main` — no branches or PRs needed.
 
+## Git workflow
+
+Commit directly to `main`. Use the `commit-commands:commit` skill (not `commit-push-pr`), then push with `git push origin main`.
+
 ## Architecture
 
 - `static_observer` extension fires a single synthetic endpoint on startup
